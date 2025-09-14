@@ -1,0 +1,2 @@
+- [x] Add sign out button to verifyemail_view.dart
+- [x] Make AuthGate stateless using StreamBuilder
