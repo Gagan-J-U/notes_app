@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart'; // Mandatory for every Flutter project
 import 'package:my_app/firebase_options.dart';
-import 'package:my_app/views/homePage.dart';
+import 'package:my_app/views/home_page.dart';
 import 'package:my_app/views/login_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
