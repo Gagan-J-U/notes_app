@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/routes.dart';
 
 enum MenuAction { logout }
 
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
       Future.microtask(() {
         Navigator.of(
           context,
-        ).pushReplacementNamed('/login');
+        ).pushReplacementNamed(loginRoute);
       });
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -38,7 +39,7 @@ class HomePage extends StatelessWidget {
                         Navigator.of(
                           context,
                         ).pushNamedAndRemoveUntil(
-                          '/login',
+                          loginRoute,
                           (route) => false,
                         );
                       }

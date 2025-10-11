@@ -1,2 +1,4 @@
-- [x] Add sign out button to verifyemail_view.dart
-- [x] Make AuthGate stateless using StreamBuilder
+- [x] Edit lib/views/home_page.dart: Add import 'package:my_app/constants/routes.dart'; and replace '/login' with loginRoute (2 occurrences)
+- [ ] Edit lib/views/login_view.dart: Add import '../constants/routes.dart'; and replace '/home' with homeRoute, '/verify-email' with verifyEmailRoute, '/register' with registerRoute
+- [ ] Edit lib/views/register_view.dart: Add import '../constants/routes.dart'; and replace '/verify-email' with verifyEmailRoute
+- [ ] Edit lib/views/verifyemail_view.dart: Add import '../constants/routes.dart'; and replace '/home' with homeRoute

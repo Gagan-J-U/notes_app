@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/routes.dart';
+import 'package:my_app/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -64,20 +66,12 @@ class _RegisterViewState extends State<RegisterView> {
                   if (mounted) {
                     await Navigator.of(
                       context,
-                    ).pushNamed('/verify-email');
+                    ).pushNamed(verifyEmailRoute);
                   }
                 } on FirebaseAuthException catch (e) {
                   // Handle Firebase specific errors
                   if (mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Error: ${e.message}',
-                        ),
-                      ),
-                    );
+                    await showErrorDialog(context, e.code);
                   }
                 } catch (e) {
                   // Handle other errors

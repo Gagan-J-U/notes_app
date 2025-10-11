@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/routes.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -27,7 +28,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
           _timer?.cancel();
           Navigator.of(
             context,
-          ).pushReplacementNamed('/home');
+          ).pushReplacementNamed(homeRoute);
         }
       }
     });

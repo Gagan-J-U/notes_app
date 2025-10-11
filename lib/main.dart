@@ -8,6 +8,8 @@ import 'package:my_app/views/login_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
 
+import 'constants/routes.dart';
+
 // Mandatory: Main entry point for every Flutter app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Mandatory if you use async code before runApp (e.g., Firebase)
@@ -29,10 +31,10 @@ void main() async {
       home:
           const AuthGate(), // This starts the app from HomePage
       routes: {
-        '/login': (context) => LoginView(),
-        '/register': (context) => RegisterView(),
-        '/home': (context) => HomePage(),
-        '/verify-email': (context) => VerifyEmail(),
+        loginRoute: (context) => LoginView(),
+        registerRoute: (context) => RegisterView(),
+        homeRoute: (context) => HomePage(),
+        verifyEmailRoute: (context) => VerifyEmail(),
       },
     ),
   );

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/routes.dart';
+import 'package:my_app/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -66,34 +68,25 @@ class _LoginViewState extends State<LoginView> {
                   if (user != null && user.emailVerified) {
                     await Navigator.of(
                       context,
-                    ).pushReplacementNamed('/home');
+                    ).pushReplacementNamed(homeRoute);
                   } else if (user != null &&
                       !user.emailVerified) {
                     await Navigator.of(
                       context,
-                    ).pushNamed('/verify-email');
+                    ).pushNamed(verifyEmailRoute);
                   }
                 } on FirebaseAuthException catch (e) {
-                  // Handle Firebase specific errors
-                  if (mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Error: ${e.message}',
-                        ),
-                      ),
-                    );
-                  }
+                  await showErrorDialog(context, e.code);
                 } catch (e) {
                   // Handle other errors
                   if (mounted) {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(
-                      const SnackBar(
-                        content: Text('An error occurred'),
+                      SnackBar(
+                        content: Text(
+                          'An unexpected error occurred. ${e.toString()}',
+                        ),
                       ),
                     );
                   }
@@ -105,7 +98,7 @@ class _LoginViewState extends State<LoginView> {
               onPressed: () {
                 Navigator.of(
                   context,
-                ).pushNamed('/register');
+                ).pushNamed(registerRoute);
               },
               child: const Text(
                 'Not registered yet? Register here!',
