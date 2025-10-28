@@ -46,7 +46,12 @@ class _VerifyEmailState extends State<VerifyEmail> {
       appBar: AppBar(title: Text("Verify Email")),
       body: Column(
         children: [
-          Text("Please verify your email"),
+          Text(
+            "We have sent you an email verification. Please open it to verify your account.",
+          ),
+          Text(
+            'If you have not received a verification email yet, press the button below.',
+          ),
           TextButton(
             onPressed: () async {
               await FirebaseAuth.instance.currentUser

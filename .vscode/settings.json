@@ -1,3 +1,4 @@
 {
-  "cmake.sourceDirectory": "F:/codes/my_app/linux"
+  "cmake.sourceDirectory": "F:/codes/my_app/linux",
+  "editor.defaultFormatter": "gmlewis-vscode.flutter-stylizer"
 }
