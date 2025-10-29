@@ -1,8 +1,7 @@
 // Mandatory: Import Firebase and Flutter packages if using Firebase features
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart'; // Mandatory for every Flutter project
-import 'package:my_app/firebase_options.dart';
+import 'package:my_app/services/auth/auth_service.dart';
 import 'package:my_app/views/home_page.dart';
 import 'package:my_app/views/login_view.dart';
 import 'package:my_app/views/register_view.dart';
@@ -13,12 +12,7 @@ import 'constants/routes.dart';
 // Mandatory: Main entry point for every Flutter app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Mandatory if you use async code before runApp (e.g., Firebase)
-
-  // Initialize Firebase once for the entire app
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  AuthService.firebase().initialize(); //
   runApp(
     MaterialApp(
       title: 'Flutter Demo', // Optional: App title

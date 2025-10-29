@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/constants/routes.dart';
+import 'package:my_app/services/auth/auth_service.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -20,10 +20,10 @@ class _VerifyEmailState extends State<VerifyEmail> {
     // Periodically check email verification status
     _timer = Timer.periodic(const Duration(seconds: 3), (
       timer,
-    ) async {
-      await FirebaseAuth.instance.currentUser?.reload();
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null && user.emailVerified) {
+    ) {
+      AuthService.firebase().reload;
+      final user = AuthService.firebase().currentUser;
+      if (user != null && user.isEmailVerified) {
         if (mounted) {
           _timer?.cancel();
           Navigator.of(
@@ -53,10 +53,9 @@ class _VerifyEmailState extends State<VerifyEmail> {
             'If you have not received a verification email yet, press the button below.',
           ),
           TextButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.currentUser
-                  ?.sendEmailVerification();
-            },
+            onPressed:
+                AuthService.firebase()
+                    .sendEmailVerification,
             child: Text("Send verification email"),
           ),
         ],

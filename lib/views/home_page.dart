@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/constants/routes.dart';
-
-enum MenuAction { logout }
+import 'package:my_app/enums/menu_action.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
