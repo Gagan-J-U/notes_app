@@ -12,7 +12,7 @@ import 'constants/routes.dart';
 // Mandatory: Main entry point for every Flutter app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Mandatory if you use async code before runApp (e.g., Firebase)
-  AuthService.firebase().initialize(); //
+  await AuthService.firebase().initialize(); //
   runApp(
     MaterialApp(
       title: 'Flutter Demo', // Optional: App title
