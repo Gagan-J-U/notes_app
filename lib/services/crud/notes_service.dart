@@ -1,28 +1,11 @@
 import 'dart:async';
-
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart'
     show
         MissingPlatformDirectoryException,
         getApplicationDocumentsDirectory;
 import 'package:sqflite/sqflite.dart';
-
-class DatabaseAlreadyOpenException implements Exception {}
-
-class UnableToGetDocumentsDirectoryException
-    implements Exception {}
-
-class DatabaseNotOpenException implements Exception {}
-
-class CouldNotDeleteUserException implements Exception {}
-
-class UserAlreadyExistsException implements Exception {}
-
-class CouldNotFindUserException implements Exception {}
-
-class CouldNotDeleteNoteException implements Exception {}
-
-class CouldNotFindNoteException implements Exception {}
+import 'crud_exceptions.dart';
 
 class NotesService {
   factory NotesService() => _shared;
@@ -44,7 +27,6 @@ class NotesService {
   late final StreamController<List<DatabaseNotes>>
   _notesStreamController;
 
-  // ignore: unused_element
   Future<Database> get _getDatabase async {
     _db ??= await _openDB('notes.db');
     return _db!;
@@ -57,6 +39,18 @@ class NotesService {
     }
     await db.close();
     _db = null;
+  }
+
+  Future<DatabaseUser> createOrGetUser({
+    required String email,
+  }) async {
+    try {
+      return await getUser(email: email);
+    } on CouldNotFindUserException {
+      return await createUser(email: email);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<DatabaseUser> createUser({
@@ -78,7 +72,7 @@ class NotesService {
     return DatabaseUser(id: userId, email: email);
   }
 
-  Future<DatabaseUser?> getUser({
+  Future<DatabaseUser> getUser({
     required String email,
   }) async {
     final db = await _getDatabase;
@@ -137,6 +131,7 @@ class NotesService {
     required String text,
   }) async {
     final db = await _getDatabase;
+
     final updatedCount = await db.update(
       'notes',
       {'text': text, 'is_synced_with_cloud': 0},
@@ -144,7 +139,7 @@ class NotesService {
       whereArgs: [note.id],
     );
     if (updatedCount != 1) {
-      throw CouldNotFindUserException();
+      throw CouldNotUpdateNoteException();
     }
     final updatedNote = DatabaseNotes(
       id: note.id,
@@ -169,10 +164,14 @@ class NotesService {
     if (results.isEmpty) {
       throw CouldNotFindNoteException();
     }
-    return DatabaseNotes.fromRow(results.first);
+    final note = DatabaseNotes.fromRow(results.first);
+    _notes.removeWhere((n) => n.id == id);
+    _notes.add(note);
+    _notesStreamController.add(_notes);
+    return note;
   }
 
-  Future<Iterable<DatabaseNotes>> getAllNotes() async {
+  Future<List<DatabaseNotes>> getAllNotes() async {
     final db = await _getDatabase;
     final notes = await db.query('notes');
 
@@ -215,6 +214,7 @@ class NotesService {
       final docsPath =
           await getApplicationDocumentsDirectory();
       final dbPath = join(docsPath.path, dbName);
+
       final db = await openDatabase(
         dbPath,
         version: 1,
@@ -225,6 +225,7 @@ class NotesService {
             email TEXT NOT NULL UNIQUE
           );
         ''');
+
           await db.execute('''
           CREATE TABLE notes(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -236,11 +237,19 @@ class NotesService {
         ''');
         },
       );
+
+      // Set _db and cache notes after opening database
+      _db = db;
+      await getAllNotes();
+
       return db;
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectoryException();
     }
   }
+
+  Stream<List<DatabaseNotes>> get allNotes =>
+      _notesStreamController.stream;
 }
 
 class DatabaseUser {

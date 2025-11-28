@@ -15,6 +15,8 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
 
+  bool _isLoading = false; // <-- Loading state
+
   @override
   void initState() {
     _emailController = TextEditingController();
@@ -30,6 +32,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _login() async {
+    setState(() => _isLoading = true);
+
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -44,30 +48,26 @@ class _LoginViewState extends State<LoginView> {
       if (user != null) {
         if (user.isEmailVerified) {
           if (mounted) {
-            Navigator.of(
+            Navigator.pushReplacementNamed(
               context,
-            ).pushReplacementNamed(homeRoute);
+              homeRoute,
+            );
           }
         } else {
           if (mounted) {
-            Navigator.of(
+            Navigator.pushReplacementNamed(
               context,
-            ).pushReplacementNamed(verifyEmailRoute);
+              verifyEmailRoute,
+            );
           }
         }
       }
     } on UserNotFoundAuthException {
-      await showErrorDialog(
-        context,
-        'No user found with this email.',
-      );
+      await showErrorDialog(context, 'User not found.');
     } on WrongPasswordAuthException {
       await showErrorDialog(context, 'Incorrect password.');
     } on InvalidEmailAuthException {
-      await showErrorDialog(
-        context,
-        'Invalid email format.',
-      );
+      await showErrorDialog(context, 'Invalid email.');
     } on GenericAuthException {
       await showErrorDialog(
         context,
@@ -81,6 +81,8 @@ class _LoginViewState extends State<LoginView> {
           ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -93,9 +95,11 @@ class _LoginViewState extends State<LoginView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // EMAIL FIELD
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -104,8 +108,12 @@ class _LoginViewState extends State<LoginView> {
               keyboardType: TextInputType.emailAddress,
               autocorrect: false,
               enableSuggestions: false,
+              enabled:
+                  !_isLoading, // Disable during loading
             ),
             const SizedBox(height: 12),
+
+            // PASSWORD FIELD
             TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
@@ -114,23 +122,33 @@ class _LoginViewState extends State<LoginView> {
               obscureText: true,
               enableSuggestions: false,
               autocorrect: false,
+              enabled:
+                  !_isLoading, // Disable during loading
             ),
             const SizedBox(height: 20),
-            TextButton(
-              onPressed: _login,
-              child: const Text('Login'),
-            ),
+
+            // LOGIN BUTTON OR LOADER
+            _isLoading
+                ? const CircularProgressIndicator()
+                : TextButton(
+                  onPressed: _login,
+                  child: const Text('Login'),
+                ),
+
             const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).pushNamed(registerRoute);
-              },
-              child: const Text(
-                'Not registered yet? Register here!',
+
+            // REGISTER BUTTON (Disabled when loading)
+            if (!_isLoading)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).pushNamed(registerRoute);
+                },
+                child: const Text(
+                  'Not registered yet? Register here!',
+                ),
               ),
-            ),
           ],
         ),
       ),

@@ -61,12 +61,7 @@ class FirebaseAuthProvider implements AuthProvider {
             email: email,
             password: password,
           );
-      final user = currentUser;
-      if (user != null) {
-        return user;
-      } else {
-        return null;
-      }
+      return currentUser;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         throw UserNotFoundAuthException();
