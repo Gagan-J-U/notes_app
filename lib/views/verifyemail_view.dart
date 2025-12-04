@@ -28,7 +28,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
           _timer?.cancel();
           Navigator.of(
             context,
-          ).pushReplacementNamed(homeRoute);
+          ).pushReplacementNamed(notesRoute);
         }
       }
     });

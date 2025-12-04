@@ -4,15 +4,15 @@ import 'package:my_app/enums/menu_action.dart';
 import 'package:my_app/services/auth/auth_service.dart';
 import 'package:my_app/services/crud/notes_service.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class NotesView extends StatefulWidget {
+  const NotesView({Key? key}) : super(key: key);
   @override
-  HomePageState createState() => HomePageState();
+  NotesViewState createState() => NotesViewState();
 }
 
-class HomePageState extends State<HomePage> {
+class NotesViewState extends State<NotesView> {
   late final NotesService _notesService;
-  late final Future<void> _userFuture;
+  late Future<void> _userFuture;
 
   String get userEmail =>
       AuthService.firebase().currentUser!.email!;
@@ -20,9 +20,14 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     _notesService = NotesService();
-    _userFuture = _notesService.createOrGetUser(
-      email: userEmail,
-    );
+
+    // ⭐ FIX 1: load user THEN load notes from SQLite
+    _userFuture = _notesService
+        .createOrGetUser(email: userEmail)
+        .then((_) async {
+          await _notesService.getAllNotesForUser();
+        });
+
     super.initState();
   }
 
@@ -44,6 +49,15 @@ class HomePageState extends State<HomePage> {
         title: const Text("My Notes"),
         centerTitle: true,
         actions: [
+          IconButton(
+            onPressed: () async {
+              await Navigator.pushNamed(
+                context,
+                newNoteRoute,
+              );
+            },
+            icon: const Icon(Icons.add),
+          ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               if (value == MenuAction.logout) {
@@ -83,7 +97,7 @@ class HomePageState extends State<HomePage> {
             );
           }
 
-          return StreamBuilder<List<DatabaseNotes>>(
+          return StreamBuilder(
             stream: _notesService.allNotes,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -92,7 +106,9 @@ class HomePageState extends State<HomePage> {
                 );
               }
 
-              final notes = snapshot.data!;
+              final notes =
+                  snapshot.data as List<DatabaseNotes>;
+              print(notes);
 
               if (notes.isEmpty) {
                 return const Center(
@@ -104,7 +120,14 @@ class HomePageState extends State<HomePage> {
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
                   final note = notes[index];
-                  return ListTile(title: Text(note.text));
+                  return ListTile(
+                    title: Text(
+                      note.text,
+                      maxLines: 1,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
                 },
               );
             },

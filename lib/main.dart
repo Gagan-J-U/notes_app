@@ -2,10 +2,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart'; // Mandatory for every Flutter project
 import 'package:my_app/services/auth/auth_service.dart';
-import 'package:my_app/views/home_page.dart';
 import 'package:my_app/views/login_view.dart';
+import 'package:my_app/views/notes/notes_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
+import 'package:my_app/views/notes/new_note_view.dart';
 
 import 'constants/routes.dart';
 
@@ -27,8 +28,9 @@ void main() async {
       routes: {
         loginRoute: (context) => LoginView(),
         registerRoute: (context) => RegisterView(),
-        homeRoute: (context) => HomePage(),
+        notesRoute: (context) => NotesView(),
         verifyEmailRoute: (context) => VerifyEmail(),
+        newNoteRoute: (context) => NewNotesView(),
       },
     ),
   );
@@ -46,7 +48,7 @@ class AuthGate extends StatelessWidget {
         if (user == null || !user.emailVerified) {
           return const LoginView();
         } else {
-          return const HomePage();
+          return const NotesView();
         }
       },
     );

@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart'
     show
         MissingPlatformDirectoryException,
         getApplicationDocumentsDirectory;
 import 'package:sqflite/sqflite.dart';
+
 import 'crud_exceptions.dart';
 
 class NotesService {
@@ -106,7 +108,7 @@ class NotesService {
   }) async {
     final dbUser = await getUser(email: owner.email);
     //make sure owner exists with correct id
-    if (dbUser != owner) {
+    if (dbUser.id != owner.id) {
       throw CouldNotFindUserException();
     }
     final db = await _getDatabase;
@@ -171,7 +173,7 @@ class NotesService {
     return note;
   }
 
-  Future<List<DatabaseNotes>> getAllNotes() async {
+  Future<List<DatabaseNotes>> getAllNotesForUser() async {
     final db = await _getDatabase;
     final notes = await db.query('notes');
 
@@ -240,7 +242,7 @@ class NotesService {
 
       // Set _db and cache notes after opening database
       _db = db;
-      await getAllNotes();
+      await getAllNotesForUser();
 
       return db;
     } on MissingPlatformDirectoryException {

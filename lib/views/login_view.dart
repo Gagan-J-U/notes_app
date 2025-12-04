@@ -50,7 +50,7 @@ class _LoginViewState extends State<LoginView> {
           if (mounted) {
             Navigator.pushReplacementNamed(
               context,
-              homeRoute,
+              notesRoute,
             );
           }
         } else {
