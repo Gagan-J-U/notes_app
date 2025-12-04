@@ -41,8 +41,6 @@ class _NewNotesViewState extends State<NewNotesView> {
     final note = _note;
     final text = _textController.text;
 
-    print("DELETE CHECK: $text");
-
     if (note != null && text.isEmpty) {
       _notesService.deleteNote(id: note.id);
     }

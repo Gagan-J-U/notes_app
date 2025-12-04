@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/constants/routes.dart';
 import 'package:my_app/services/auth/auth_exceptions.dart';
 import 'package:my_app/services/auth/auth_service.dart';
-import 'package:my_app/utilities/show_error_dialog.dart';
+import 'package:my_app/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -63,15 +63,28 @@ class _LoginViewState extends State<LoginView> {
         }
       }
     } on UserNotFoundAuthException {
-      await showErrorDialog(context, 'User not found.');
+      await showErrorDialog(
+        context: context,
+        title: 'Error',
+        message: 'User not found.',
+      );
     } on WrongPasswordAuthException {
-      await showErrorDialog(context, 'Incorrect password.');
+      await showErrorDialog(
+        context: context,
+        title: 'Error',
+        message: 'Incorrect password.',
+      );
     } on InvalidEmailAuthException {
-      await showErrorDialog(context, 'Invalid email.');
+      await showErrorDialog(
+        context: context,
+        title: 'Error',
+        message: 'Invalid email.',
+      );
     } on GenericAuthException {
       await showErrorDialog(
-        context,
-        'Authentication failed.',
+        context: context,
+        title: 'Error',
+        message: 'Authentication failed.',
       );
     } catch (_) {
       if (mounted) {
