@@ -1,22 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/services/auth/auth_service.dart';
 import 'package:my_app/services/crud/notes_service.dart';
+import 'package:my_app/utilities/generics/get_arguments.dart';
 
-class NewNotesView extends StatefulWidget {
-  const NewNotesView({super.key});
+class CreateUpdateNoteView extends StatefulWidget {
+  const CreateUpdateNoteView({super.key});
 
   @override
-  State<NewNotesView> createState() => _NewNotesViewState();
+  State<CreateUpdateNoteView> createState() =>
+      _CreateUpdateNoteViewState();
 }
 
-class _NewNotesViewState extends State<NewNotesView> {
+class _CreateUpdateNoteViewState
+    extends State<CreateUpdateNoteView> {
   DatabaseNotes? _note;
+  late final Future<DatabaseNotes> _noteFuture; // ⭐ FIX
   late final NotesService _notesService;
   late final TextEditingController _textController;
-  late final Future<DatabaseNotes> _noteFuture; // ⭐ FIX
+
+  @override
+  void dispose() {
+    _saveNoteIfNotEmpty(); // ⭐ correct order
+    _deleteNoteIfEmpty();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _notesService = NotesService();
+    _textController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _noteFuture = createOrGetExistingNote(context);
+      });
+    });
+    super.initState();
+  }
 
   // Create a new note in database ONCE
-  Future<DatabaseNotes> createNewNote() async {
+  Future<DatabaseNotes> createOrGetExistingNote(
+    BuildContext context,
+  ) async {
+    final args = context.getArgument<DatabaseNotes?>();
+    if (args != null) {
+      _note = args;
+      _textController.text = args.text;
+      return args;
+    }
     if (_note != null) {
       return _note!;
     }
@@ -50,9 +81,6 @@ class _NewNotesViewState extends State<NewNotesView> {
   void _saveNoteIfNotEmpty() async {
     final note = _note;
     final text = _textController.text;
-
-    print("SAVE CHECK: $text");
-
     if (note != null && text.isNotEmpty) {
       await _notesService.updateNote(
         note: note,
@@ -62,33 +90,16 @@ class _NewNotesViewState extends State<NewNotesView> {
   }
 
   @override
-  void initState() {
-    _notesService = NotesService();
-    _textController = TextEditingController();
-
-    // ⭐ FIX: Future created only once
-    _noteFuture = createNewNote();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _saveNoteIfNotEmpty(); // ⭐ correct order
-    _deleteNoteIfEmpty();
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('New Note')),
-      body: FutureBuilder(
+      body: FutureBuilder<DatabaseNotes>(
         future: _noteFuture, // ⭐ FIXED: use stored future
         builder: (context, snapshot) {
           if (snapshot.connectionState ==
               ConnectionState.done) {
+            print("snapshot.data = ${snapshot.data}");
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -100,6 +111,10 @@ class _NewNotesViewState extends State<NewNotesView> {
                 ),
                 onChanged: (value) async {
                   final note = _note;
+                  print(
+                    "onChanged fired with: $value | note: $_note",
+                  );
+
                   if (note != null) {
                     await _notesService.updateNote(
                       note: note,

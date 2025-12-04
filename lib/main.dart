@@ -6,7 +6,7 @@ import 'package:my_app/views/login_view.dart';
 import 'package:my_app/views/notes/notes_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
-import 'package:my_app/views/notes/new_note_view.dart';
+import 'package:my_app/views/notes/create_update_note_view.dart';
 
 import 'constants/routes.dart';
 
@@ -30,7 +30,8 @@ void main() async {
         registerRoute: (context) => RegisterView(),
         notesRoute: (context) => NotesView(),
         verifyEmailRoute: (context) => VerifyEmail(),
-        newNoteRoute: (context) => NewNotesView(),
+        createUpdateNoteRoute:
+            (context) => CreateUpdateNoteView(),
       },
     ),
   );

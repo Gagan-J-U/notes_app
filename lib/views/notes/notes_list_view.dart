@@ -5,11 +5,13 @@ import 'package:my_app/utilities/dialogs/delete_dialog.dart';
 class NotesListView extends StatelessWidget {
   final List<DatabaseNotes> notes;
   final void Function(DatabaseNotes) onDeleteNote;
+  final void Function(DatabaseNotes) onTapNote;
 
   const NotesListView({
     super.key,
     required this.notes,
     required this.onDeleteNote,
+    required this.onTapNote,
   });
 
   @override
@@ -19,6 +21,9 @@ class NotesListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final note = notes[index];
         return ListTile(
+          onTap: () {
+            onTapNote(note);
+          },
           title: Text(
             note.text,
             maxLines: 1,
