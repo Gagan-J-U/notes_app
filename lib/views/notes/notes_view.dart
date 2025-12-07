@@ -17,7 +17,7 @@ class NotesViewState extends State<NotesView> {
   late Future<void> _userFuture;
 
   String get userEmail =>
-      AuthService.firebase().currentUser!.email!;
+      AuthService.firebase().currentUser!.email;
 
   @override
   void initState() {

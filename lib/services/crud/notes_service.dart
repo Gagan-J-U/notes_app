@@ -25,6 +25,7 @@ class NotesService {
       NotesService._sharedInstance();
 
   Database? _db;
+  DatabaseUser? _userEmail;
   final List<DatabaseNotes> _notes = [];
   late final StreamController<List<DatabaseNotes>>
   _notesStreamController;
@@ -47,12 +48,13 @@ class NotesService {
     required String email,
   }) async {
     try {
-      return await getUser(email: email);
+      _userEmail = await getUser(email: email);
     } on CouldNotFindUserException {
-      return await createUser(email: email);
+      _userEmail = await createUser(email: email);
     } catch (e) {
       rethrow;
     }
+    return _userEmail!;
   }
 
   Future<DatabaseUser> createUser({
@@ -175,7 +177,11 @@ class NotesService {
 
   Future<List<DatabaseNotes>> getAllNotesForUser() async {
     final db = await _getDatabase;
-    final notes = await db.query('notes');
+    final notes = await db.query(
+      'notes',
+      where: 'user_id = ?',
+      whereArgs: [_userEmail?.id],
+    );
 
     final results =
         notes.map((noteRow) {
@@ -203,7 +209,11 @@ class NotesService {
 
   Future<void> deleteAllNotes() async {
     final db = await _getDatabase;
-    final deletedCount = await db.delete('notes');
+    final deletedCount = await db.delete(
+      'notes',
+      where: 'user_id = ?',
+      whereArgs: [_userEmail?.id],
+    );
     if (deletedCount == 0) {
       throw CouldNotDeleteNoteException();
     }

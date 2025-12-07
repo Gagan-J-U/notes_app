@@ -53,7 +53,7 @@ class _CreateUpdateNoteViewState
     }
 
     final user = AuthService.firebase().currentUser!;
-    final email = user.email!;
+    final email = user.email;
     final owner = await _notesService.createOrGetUser(
       email: email,
     );
