@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/constants/routes.dart';
 import 'package:my_app/services/auth/auth_exceptions.dart';
-import 'package:my_app/services/auth/auth_service.dart';
+import 'package:my_app/services/auth/bloc/auth_bloc.dart';
+import 'package:my_app/services/auth/bloc/auth_event.dart';
 import 'package:my_app/utilities/dialogs/error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -36,11 +38,12 @@ class _RegisterViewState extends State<RegisterView> {
     final password = _passwordController.text;
 
     try {
-      await AuthService.firebase().createUser(
-        email: email,
-        password: password,
+      context.read<AuthBloc>().add(
+        AuthEventRegister(email: email, password: password),
       );
-      await AuthService.firebase().sendEmailVerification();
+      context.read<AuthBloc>().add(
+        AuthEventSendEmailVerification(),
+      );
 
       if (mounted) {
         Navigator.of(context).pushNamed(verifyEmailRoute);
