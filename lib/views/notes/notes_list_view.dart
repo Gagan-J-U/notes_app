@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/services/cloud/cloud_note.dart';
-import 'package:my_app/services/crud/notes_service.dart';
 import 'package:my_app/utilities/dialogs/delete_dialog.dart';
 
 class NotesListView extends StatelessWidget {
