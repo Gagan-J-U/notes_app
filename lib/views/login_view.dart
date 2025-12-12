@@ -4,6 +4,7 @@ import 'package:my_app/constants/routes.dart';
 import 'package:my_app/services/auth/auth_exceptions.dart';
 import 'package:my_app/services/auth/bloc/auth_bloc.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
+import 'package:my_app/services/auth/bloc/auth_states.dart';
 import 'package:my_app/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -16,8 +17,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
-
-  bool _isLoading = false; // <-- Loading state
 
   @override
   void initState() {
@@ -34,50 +33,12 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _login() async {
-    setState(() => _isLoading = true);
-
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    try {
-      context.read<AuthBloc>().add(
-        AuthEventLogIn(email: email, password: password),
-      );
-    } on UserNotFoundAuthException {
-      await showErrorDialog(
-        context: context,
-        title: 'Error',
-        message: 'User not found.',
-      );
-    } on WrongPasswordAuthException {
-      await showErrorDialog(
-        context: context,
-        title: 'Error',
-        message: 'Incorrect password.',
-      );
-    } on InvalidEmailAuthException {
-      await showErrorDialog(
-        context: context,
-        title: 'Error',
-        message: 'Invalid email.',
-      );
-    } on GenericAuthException {
-      await showErrorDialog(
-        context: context,
-        title: 'Error',
-        message: 'Authentication failed.',
-      );
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An unexpected error occurred'),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    context.read<AuthBloc>().add(
+      AuthEventLogIn(email: email, password: password),
+    );
   }
 
   @override
@@ -102,8 +63,6 @@ class _LoginViewState extends State<LoginView> {
               keyboardType: TextInputType.emailAddress,
               autocorrect: false,
               enableSuggestions: false,
-              enabled:
-                  !_isLoading, // Disable during loading
             ),
             const SizedBox(height: 12),
 
@@ -116,33 +75,56 @@ class _LoginViewState extends State<LoginView> {
               obscureText: true,
               enableSuggestions: false,
               autocorrect: false,
-              enabled:
-                  !_isLoading, // Disable during loading
             ),
             const SizedBox(height: 20),
 
             // LOGIN BUTTON OR LOADER
-            _isLoading
-                ? const CircularProgressIndicator()
-                : TextButton(
-                  onPressed: _login,
-                  child: const Text('Login'),
-                ),
+            BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) async {
+                if (state is AuthStateLoggedOut &&
+                    state.exception != null) {
+                  late final String message;
+                  switch (state.exception) {
+                    case WrongPasswordAuthException():
+                      message = 'Incorrect password.';
+                      break;
+                    case GenericAuthException():
+                      message =
+                          'Authentication error occurred.';
+                      break;
+                    case UserNotFoundAuthException():
+                      message = 'User not found.';
+                      break;
+                    default:
+                      message =
+                          'An unknown error occurred.';
+                  }
+                  await showErrorDialog(
+                    context: context,
+                    title: 'Error',
+                    message: message,
+                  );
+                }
+              },
+              child: TextButton(
+                onPressed: _login,
+                child: const Text('Login'),
+              ),
+            ),
 
             const SizedBox(height: 8),
 
             // REGISTER BUTTON (Disabled when loading)
-            if (!_isLoading)
-              TextButton(
-                onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).pushNamed(registerRoute);
-                },
-                child: const Text(
-                  'Not registered yet? Register here!',
-                ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).pushNamed(registerRoute);
+              },
+              child: const Text(
+                'Not registered yet? Register here!',
               ),
+            ),
           ],
         ),
       ),

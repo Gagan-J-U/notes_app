@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_app/services/auth/auth_provider.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
 import 'package:my_app/services/auth/bloc/auth_states.dart';
-import 'package:my_app/services/auth/auth_provider.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthProvider provider)
@@ -21,7 +21,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventLogIn>((event, emit) async {
       // Handle login event
-      emit(const AuthStateLoading());
       try {
         final user = await provider.logIn(
           email: event.email,
@@ -35,15 +34,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
         }
       } catch (e) {
-        emit(
-          AuthStateLoginFailure(exception: e as Exception),
-        );
+        emit(AuthStateLoggedOut(exception: e as Exception));
       }
     });
 
     on<AuthEventLogOut>((event, emit) async {
       // Handle logout event
-      emit(const AuthStateLoading());
       try {
         await provider.logOut();
         emit(const AuthStateLoggedOut());
@@ -56,7 +52,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventSendEmailVerification>((event, emit) {
       // Handle send email verification event
-      emit(const AuthStateLoading());
       provider.sendEmailVerification();
       final user = provider.currentUser;
       if (user != null && !user.isEmailVerified) {
@@ -68,7 +63,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventRegister>((event, emit) {
       // Handle register event
-      emit(const AuthStateLoading());
       try {
         provider
             .createUser(
@@ -83,9 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               }
             });
       } catch (e) {
-        emit(
-          AuthStateLoginFailure(exception: e as Exception),
-        );
+        emit(AuthStateLoggedOut(exception: e as Exception));
       }
     });
   }
