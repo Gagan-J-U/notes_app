@@ -6,6 +6,7 @@ import 'package:my_app/services/auth/bloc/auth_bloc.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
 import 'package:my_app/services/auth/bloc/auth_states.dart';
 import 'package:my_app/utilities/dialogs/error_dialog.dart';
+import 'package:my_app/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -17,6 +18,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
+  CloseDialog? _closeLoadingDialog;
 
   @override
   void initState() {
@@ -43,89 +45,101 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut &&
+            state.isLoading) {
+          _closeLoadingDialog = showLoadingDialog(
+            context,
+            message: 'Please wait while we log you in.',
+          );
+        } else {
+          if (_closeLoadingDialog != null) {
+            CloseDialog close = _closeLoadingDialog!;
+            close();
+            _closeLoadingDialog = null;
+          }
+        }
 
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // EMAIL FIELD
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                hintText: 'Enter your email',
+        if (state is AuthStateLoggedOut &&
+            state.exception != null) {
+          late final String message;
+          switch (state.exception) {
+            case WrongPasswordAuthException():
+              message = 'Incorrect password.';
+              break;
+            case GenericAuthException():
+              message = 'Authentication error occurred.';
+              break;
+            case UserNotFoundAuthException():
+              message = 'User not found.';
+              break;
+            default:
+              message = 'An unknown error occurred.';
+          }
+          await showErrorDialog(
+            context: context,
+            title: 'Error',
+            message: message,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Login"),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // EMAIL FIELD
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your email',
+                ),
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: false,
               ),
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              enableSuggestions: false,
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // PASSWORD FIELD
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                hintText: 'Enter your password',
+              // PASSWORD FIELD
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your password',
+                ),
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
               ),
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // LOGIN BUTTON OR LOADER
-            BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) async {
-                if (state is AuthStateLoggedOut &&
-                    state.exception != null) {
-                  late final String message;
-                  switch (state.exception) {
-                    case WrongPasswordAuthException():
-                      message = 'Incorrect password.';
-                      break;
-                    case GenericAuthException():
-                      message =
-                          'Authentication error occurred.';
-                      break;
-                    case UserNotFoundAuthException():
-                      message = 'User not found.';
-                      break;
-                    default:
-                      message =
-                          'An unknown error occurred.';
-                  }
-                  await showErrorDialog(
-                    context: context,
-                    title: 'Error',
-                    message: message,
-                  );
-                }
-              },
-              child: TextButton(
+              // LOGIN BUTTON OR LOADER
+              TextButton(
                 onPressed: _login,
                 child: const Text('Login'),
               ),
-            ),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            // REGISTER BUTTON (Disabled when loading)
-            TextButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).pushNamed(registerRoute);
-              },
-              child: const Text(
-                'Not registered yet? Register here!',
+              // REGISTER BUTTON (Disabled when loading)
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    const AuthEventShouldRegister(),
+                  );
+                },
+                child: const Text(
+                  'Not registered yet? Register here!',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

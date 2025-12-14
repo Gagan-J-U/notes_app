@@ -31,17 +31,6 @@ class NotesViewState extends State<NotesView> {
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthService.firebase().currentUser;
-
-    if (user == null || !user.isEmailVerified) {
-      Future.microtask(() {
-        Navigator.pushReplacementNamed(context, loginRoute);
-      });
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Notes"),

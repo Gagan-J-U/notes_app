@@ -16,30 +16,20 @@ import 'constants/routes.dart';
 
 // Mandatory: Main entry point for every Flutter app
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Mandatory if you use async code before runApp (e.g., Firebase)
-  await AuthService.firebase().initialize(); //
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.firebase().initialize();
+
   runApp(
-    MaterialApp(
-      title: 'Flutter Demo', // Optional: App title
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor:
-              Colors.deepPurple, // Optional: Custom theme
-        ),
+    BlocProvider(
+      create: (_) => AuthBloc(FirebaseAuthProvider()),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        home: const HomePage(),
+        routes: {
+          createUpdateNoteRoute:
+              (context) => const CreateUpdateNoteView(),
+        },
       ),
-      home: BlocProvider<AuthBloc>(
-        create:
-            (context) => AuthBloc(FirebaseAuthProvider()),
-        child: const HomePage(),
-      ),
-      routes: {
-        loginRoute: (context) => LoginView(),
-        registerRoute: (context) => RegisterView(),
-        notesRoute: (context) => NotesView(),
-        verifyEmailRoute: (context) => VerifyEmail(),
-        createUpdateNoteRoute:
-            (context) => CreateUpdateNoteView(),
-      },
     ),
   );
 }
@@ -53,24 +43,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     context.read<AuthBloc>().add(
       const AuthEventInitialize(),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is AuthStateLoading) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (state is AuthStateLoggedOut) {
+        if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateNeedsVerification) {
           return const VerifyEmail();
         } else if (state is AuthStateLoggedIn) {
           return const NotesView();
+        } else if (state is AuthStateRegister) {
+          return const RegisterView();
         } else {
           return const Scaffold(
             body: Center(

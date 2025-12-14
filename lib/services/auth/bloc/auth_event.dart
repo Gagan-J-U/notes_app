@@ -34,3 +34,7 @@ class AuthEventRegister extends AuthEvent {
     required this.password,
   });
 }
+
+class AuthEventShouldRegister extends AuthEvent {
+  const AuthEventShouldRegister();
+}
