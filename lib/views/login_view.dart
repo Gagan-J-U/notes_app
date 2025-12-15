@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_app/constants/routes.dart';
 import 'package:my_app/services/auth/auth_exceptions.dart';
 import 'package:my_app/services/auth/bloc/auth_bloc.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
@@ -47,20 +46,6 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateLoggedOut &&
-            state.isLoading) {
-          _closeLoadingDialog = showLoadingDialog(
-            context,
-            message: 'Please wait while we log you in.',
-          );
-        } else {
-          if (_closeLoadingDialog != null) {
-            CloseDialog close = _closeLoadingDialog!;
-            close();
-            _closeLoadingDialog = null;
-          }
-        }
-
         if (state is AuthStateLoggedOut &&
             state.exception != null) {
           late final String message;

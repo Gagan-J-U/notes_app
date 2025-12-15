@@ -1,24 +1,32 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:my_app/services/auth/auth_user.dart';
-import 'package:equatable/equatable.dart';
 
 @immutable
 abstract class AuthState {
-  const AuthState();
+  final bool isLoading;
+  final String loadingText;
+  const AuthState({
+    required this.isLoading,
+    this.loadingText = 'please wait a moment',
+  });
 }
 
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
-  const AuthStateLoggedIn({required this.user});
+  const AuthStateLoggedIn({
+    required this.user,
+    required super.isLoading,
+  });
 }
 
 class AuthStateLoggedOut extends AuthState
     with EquatableMixin {
-  final bool isLoading;
   final Exception? exception;
   const AuthStateLoggedOut({
     required this.exception,
-    required this.isLoading,
+    required super.isLoading,
+    super.loadingText,
   });
 
   @override
@@ -26,9 +34,15 @@ class AuthStateLoggedOut extends AuthState
 }
 
 class AuthStateNeedsVerification extends AuthState {
-  const AuthStateNeedsVerification();
+  const AuthStateNeedsVerification({
+    required super.isLoading,
+  });
 }
 
 class AuthStateRegister extends AuthState {
-  const AuthStateRegister();
+  const AuthStateRegister({required super.isLoading});
+}
+
+class AuthStateUninitialized extends AuthState {
+  const AuthStateUninitialized({required super.isLoading});
 }
