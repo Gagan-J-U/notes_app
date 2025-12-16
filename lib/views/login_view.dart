@@ -5,7 +5,6 @@ import 'package:my_app/services/auth/bloc/auth_bloc.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
 import 'package:my_app/services/auth/bloc/auth_states.dart';
 import 'package:my_app/utilities/dialogs/error_dialog.dart';
-import 'package:my_app/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -17,7 +16,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
-  CloseDialog? _closeLoadingDialog;
 
   @override
   void initState() {
@@ -122,6 +120,16 @@ class _LoginViewState extends State<LoginView> {
                 child: const Text(
                   'Not registered yet? Register here!',
                 ),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    const AuthEventForgotPassword(
+                      email: null,
+                    ),
+                  );
+                },
+                child: const Text('Forgot Password?'),
               ),
             ],
           ),

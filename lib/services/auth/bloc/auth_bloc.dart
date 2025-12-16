@@ -78,6 +78,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthEventLogOut>((event, emit) async {
+      emit(
+        const AuthStateLoggedOut(
+          exception: null,
+          isLoading: true,
+          loadingText: 'Logging out...',
+        ),
+      );
       // Handle logout event
       try {
         await provider.logOut();
@@ -137,6 +144,48 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventShouldRegister>((event, emit) {
       // Handle should register event
       emit(const AuthStateRegister(isLoading: false));
+    });
+
+    on<AuthEventForgotPassword>((event, emit) async {
+      emit(
+        AuthStateForgotPassword(
+          hasSentEmail: false,
+          exception: null,
+          isLoading: false,
+        ),
+      );
+      if (event.email != null) {
+        // User has provided an email, send reset email
+        emit(
+          AuthStateForgotPassword(
+            hasSentEmail: false,
+            exception: null,
+            isLoading: true,
+          ),
+        );
+        try {
+          await provider.sendPasswordResetEmail(
+            toEmail: event.email!,
+          );
+          emit(
+            AuthStateForgotPassword(
+              hasSentEmail: true,
+              exception: null,
+              isLoading: false,
+            ),
+          );
+        } catch (e) {
+          emit(
+            AuthStateForgotPassword(
+              hasSentEmail: false,
+              exception: e as Exception,
+              isLoading: false,
+            ),
+          );
+        }
+      } else {
+        return;
+      }
     });
   }
 }

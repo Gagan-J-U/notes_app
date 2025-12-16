@@ -82,6 +82,9 @@ class _RegisterViewState extends State<RegisterView> {
             children: [
               TextField(
                 controller: _emailController,
+                autofocus: true,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
                 decoration: InputDecoration(
                   hintText: 'Enter your email',
                 ),
@@ -105,7 +108,9 @@ class _RegisterViewState extends State<RegisterView> {
                     const AuthEventLogOut(),
                   );
                 },
-                child: Text("Alreadty registered? Login here!"),
+                child: Text(
+                  "Alreadty registered? Login here!",
+                ),
               ),
             ],
           ),

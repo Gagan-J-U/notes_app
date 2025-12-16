@@ -12,6 +12,7 @@ import 'package:my_app/views/notes/create_update_note_view.dart';
 import 'package:my_app/views/notes/notes_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
+import 'package:my_app/views/forgot_password_view.dart';
 
 import 'constants/routes.dart';
 
@@ -73,6 +74,8 @@ class _HomePageState extends State<HomePage> {
           return const NotesView();
         } else if (state is AuthStateRegister) {
           return const RegisterView();
+        } else if (state is AuthStateForgotPassword) {
+          return const ForgotPasswordView();
         } else {
           return const Scaffold(
             body: Center(
