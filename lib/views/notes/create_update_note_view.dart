@@ -131,8 +131,20 @@ class _CreateUpdateNoteViewState
                 controller: _textController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Start typing your note...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                ),
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
                 ),
                 onChanged: (value) async {
                   final note = _note;

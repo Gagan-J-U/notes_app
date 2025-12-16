@@ -87,21 +87,52 @@ class _RegisterViewState extends State<RegisterView> {
                 autocorrect: false,
                 decoration: InputDecoration(
                   hintText: 'Enter your email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Enter your password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                 ),
               ),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: _register,
-                child: Text('Register'),
+              SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _register,
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Register',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
               ),
+              SizedBox(height: 12),
               TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(
@@ -109,7 +140,8 @@ class _RegisterViewState extends State<RegisterView> {
                   );
                 },
                 child: Text(
-                  "Alreadty registered? Login here!",
+                  "Already registered? Login here!",
+                  style: TextStyle(fontSize: 14),
                 ),
               ),
             ],

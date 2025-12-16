@@ -13,8 +13,20 @@ Future<t?> showGenericDialog<t>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          content,
+          style: const TextStyle(fontSize: 14, height: 1.4),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         actions:
             options.keys.map((optionTitle) {
               final optionValue = options[optionTitle];
@@ -22,7 +34,10 @@ Future<t?> showGenericDialog<t>({
                 onPressed: () {
                   Navigator.of(context).pop(optionValue);
                 },
-                child: Text(optionTitle),
+                child: Text(
+                  optionTitle,
+                  style: const TextStyle(fontSize: 14),
+                ),
               );
             }).toList(),
       );

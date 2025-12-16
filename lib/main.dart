@@ -1,5 +1,6 @@
 // Mandatory: Import Firebase and Flutter packages if using Firebase features
 import 'package:flutter/material.dart'; // Mandatory for every Flutter project
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/helpers/loading/loading_screen.dart';
 import 'package:my_app/services/auth/auth_service.dart';
@@ -7,12 +8,12 @@ import 'package:my_app/services/auth/bloc/auth_bloc.dart';
 import 'package:my_app/services/auth/bloc/auth_event.dart';
 import 'package:my_app/services/auth/bloc/auth_states.dart';
 import 'package:my_app/services/auth/firebase_auth_provider.dart';
+import 'package:my_app/views/forgot_password_view.dart';
 import 'package:my_app/views/login_view.dart';
 import 'package:my_app/views/notes/create_update_note_view.dart';
 import 'package:my_app/views/notes/notes_view.dart';
 import 'package:my_app/views/register_view.dart';
 import 'package:my_app/views/verifyemail_view.dart';
-import 'package:my_app/views/forgot_password_view.dart';
 
 import 'constants/routes.dart';
 
@@ -20,12 +21,16 @@ import 'constants/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AuthService.firebase().initialize();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   runApp(
     BlocProvider(
       create: (_) => AuthBloc(FirebaseAuthProvider()),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Notes',
         home: const HomePage(),
         routes: {
           createUpdateNoteRoute:

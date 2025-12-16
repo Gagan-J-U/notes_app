@@ -59,28 +59,55 @@ class _ForgotPasswordViewState
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              const SizedBox(height: 24),
               const Text(
                 'If you forgot your password, enter your email below to receive a password reset link.',
+                style: TextStyle(fontSize: 15, height: 1.5),
+                textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 28),
               TextField(
                 controller: _controller,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  final email = _controller.text;
-                  context.read<AuthBloc>().add(
-                    AuthEventForgotPassword(email: email),
-                  );
-                },
-                child: const Text(
-                  'Send Password Reset Email',
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final email = _controller.text;
+                    context.read<AuthBloc>().add(
+                      AuthEventForgotPassword(email: email),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'Send Password Reset Email',
+                    style: TextStyle(fontSize: 15),
+                  ),
                 ),
               ),
+              const SizedBox(height: 12),
               TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(

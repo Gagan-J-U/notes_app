@@ -74,41 +74,72 @@ class _LoginViewState extends State<LoginView> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // EMAIL FIELD
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Enter your email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
                 enableSuggestions: false,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // PASSWORD FIELD
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Enter your password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
                 ),
                 obscureText: true,
                 enableSuggestions: false,
                 autocorrect: false,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // LOGIN BUTTON OR LOADER
-              TextButton(
-                onPressed: _login,
-                child: const Text('Login'),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                    ),
+                  ),
+                  onPressed: _login,
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
               // REGISTER BUTTON (Disabled when loading)
               TextButton(
@@ -119,6 +150,7 @@ class _LoginViewState extends State<LoginView> {
                 },
                 child: const Text(
                   'Not registered yet? Register here!',
+                  style: TextStyle(fontSize: 14),
                 ),
               ),
               TextButton(
@@ -129,7 +161,10 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   );
                 },
-                child: const Text('Forgot Password?'),
+                child: const Text(
+                  'Forgot Password?',
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
             ],
           ),
